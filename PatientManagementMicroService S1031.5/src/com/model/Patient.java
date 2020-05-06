@@ -146,7 +146,7 @@ public String insertPatient(String m_patient_id,String m_patient_userName,String
 			}
 
 			// Prepare the html table to be displayed
-			output = "<table border=\"1\"><tr><th>m_patient_id</th><th>m_patient_userName</th><th>m_patient_password</th><th>m_patient_name</th><th>m_patient_birthDate</th><th>m_patient_weight</th><th>m_patient_bloodGroup</th><th>m_patient_contactNo</th><th>m_patient_address</th><th>m_patient_gurdianName</th><th>m_patient_age</th><th>Update</th></tr>";
+			output = "<table border=\"1\"><tr><th></th><th>m_patient_id</th><th>m_patient_userName</th><th>m_patient_password</th><th>m_patient_name</th><th>m_patient_birthDate</th><th>m_patient_weight</th><th>m_patient_bloodGroup</th><th>m_patient_contactNo</th><th>m_patient_address</th><th>m_patient_gurdianName</th><th>m_patient_age</th><th>Update</th><th>Delete</th></tr>";
 
 			String query = "select * from m_Patient";
 			Statement stmt = con.createStatement();
@@ -167,7 +167,11 @@ public String insertPatient(String m_patient_id,String m_patient_userName,String
 				int m_patient_age = rs.getInt("m_patient_age");
 				
 				// Add into the html table
-				output += "<tr><td>" + m_patient_id + "</td>";
+				
+				
+				output += "<tr><td><input type='hidden'  id='hidPatientIDUpdate' name='hidPatientIDUpdate' value='"
+						+ m_patient_id + "'></td>";
+				output += "<td>" + m_patient_id + "</td>";
 				output += "<td>" + m_patient_userName + "</td>";
 				output += "<td>" + m_patient_password + "</td>";
 				output += "<td>" + m_patient_name + "</td>";
@@ -180,9 +184,8 @@ public String insertPatient(String m_patient_id,String m_patient_userName,String
 				output += "<td>" + m_patient_age + "</td>";
 
 				// buttons
-				output += "<td><input name=\"btnUpdate\" type=\"button\" value=\"Update\" class=\"btn btn-secondary\"></td>"
-						+ "<td><form method=\"post\" action=\"Patient.jsp\">";
-
+				output += "<td><input name='btnUpdate' type='button' value='Update' class='btnUpdate btn btn-secondary'></td><td><input name='btnRemove' type='button' value='Remove' class='btnRemove btn btn-danger' data-t_payment_no='"+ m_patient_id + "'>" 
+						 + "</td></tr>";
 			}
 
 			con.close();
@@ -234,10 +237,10 @@ public String insertPatient(String m_patient_id,String m_patient_userName,String
 			preparedStmt.execute();
 			con.close();
 
-			output = "Patient Details Updated successfully";
-
+			String newPatient = readPatient();
+			output = "{\"status\":\"success\", \"data\": \"" + newPatient + "\"}";
 		} catch (Exception e) {
-			output = "Error while updating the item.";
+			output = "{\"status\":\"error\", \"data\":         \"Error while Updating the Patient.\"}";
 			System.err.println(e.getMessage());
 		}
 
@@ -266,19 +269,16 @@ public String insertPatient(String m_patient_id,String m_patient_userName,String
 
 			// binding values
 			preparedStmt.setString(1, m_patient_id);
-			
-			
-			
+
 			// execute the statement
 			preparedStmt.execute();
 			con.close();
 
-			output = "Deleted successfully";
-
+			String newPatient = readPatient();
+			output = "{\"status\":\"success\", \"data\": \"" + newPatient + "\"}";
 		} catch (Exception e) {
-			output = "Error while deleting the Patient.";
+			output = "{\"status\":\"error\", \"data\":         \"Error while Deleting the Patient.\"}";
 			System.err.println(e.getMessage());
-
 		}
 
 		return output;
